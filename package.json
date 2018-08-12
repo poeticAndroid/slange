@@ -1,0 +1,32 @@
+{
+  "name": "slange",
+  "version": "0.2.6",
+  "description": "A snake game written in Poetry",
+  "main": "index.js",
+  "scripts": {
+    "build": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FantasyInternet/poetry.git"
+  },
+  "keywords": [
+    "wasm",
+    "webassembly",
+    "compiler",
+    "programming",
+    "language",
+    "snake",
+    "ldjam"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FantasyInternet/poetry/issues"
+  },
+  "homepage": "https://github.com/FantasyInternet/poetry#readme",
+  "devDependencies": {
+    "wabt": "^1.0.0"
+  }
+}
