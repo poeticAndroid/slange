@@ -224,15 +224,15 @@ function scanForGlobals(tokenTree) {
 
 function compileModule(c) {
   let imports = ""
-  let stdlib = fs.readFileSync("stdlib.wast")
-  let runtime = fs.readFileSync("runtime.wast")
-  let memory = `(memory $-memory 16) \n`
+  let memory = `(memory $-memory 2) \n`
   let table = ""
   let globals = ""
   let functions = ""
   let start = "(call $-initruntime)\n"
   let startLocals = []
   let exports = ""
+  let runtime = fs.readFileSync("runtime.wast")
+  let stdlib = fs.readFileSync("stdlib.wast")
 
   let offset = 1024 * 64
   for (let i = 8; i < c.strings.length; i++) {
@@ -336,33 +336,33 @@ function compileModule(c) {
     (module
       ;; imports
       ${imports}
-
-      ;; stdlib
-      ${stdlib}
-
-      ;; runtime
-      ${runtime}
-
+      
       ;; memory
       ${memory}
-
+      
       ;; table
       ${table}
-
+      
       ;; globals
       ${globals}
-
+      
       ;; functions
       ${functions}
-
+      
       ;; start
       (func $-start
         (local $-success i32)
-      ${start})
+        ${start})
       (start $-start)
       
       ;; exports
       ${exports}
+      
+      ;; runtime
+      ${runtime}
+      
+      ;; stdlib
+      ${stdlib}
     )
   `.trim()
 }
@@ -422,7 +422,7 @@ function compileBlock(tokenTree, globals, locals) {
 }
 
 function compileStatement(tokenTree, globals, locals) {
-  let wast = ""
+  let wast = ""// "\n;; " + tokenTree.join(" ") + "\n"
   tokenTree = deparens(tokenTree, true)
 
   if (isIdentifier(tokenTree[0])) {

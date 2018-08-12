@@ -1,3 +1,12 @@
+(func $-getMindex (result i32)
+  (i32.mul (i32.div_u (get_global $-mindex) (i32.const 8)) (i32.const 8))
+)
+(export "getMindex" (func $-getMindex))
+(func $-loadF64 (param $offset i32) (result f64)
+  (f64.load (get_local $offset))
+)
+(export "loadF64" (func $-loadF64))
+
 ;; memory management
 (func $-initruntime
   (i32.store (i32.const 0) (i32.sub (i32.mul (i32.const 65536) (current_memory)) (i32.const 8)))

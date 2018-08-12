@@ -7,7 +7,7 @@
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
-  setStepInterval 256
+  ~setStepInterval 256
   focusInput 3
 
 @export "step" step t
@@ -85,6 +85,7 @@ write8 display (4*displayWidth*displayHeight)-1 0
   @set index = 4 * (y * displayWidth + x)
   @if index >= 0 &&  index < ( size_of display )
     write32 display index c
+    
 
 
 

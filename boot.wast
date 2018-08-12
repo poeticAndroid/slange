@@ -18,60 +18,182 @@
 (import "env" "getGameButtonY"  (func $--getGameButtonY (result f64) ))
 (import "env" "setStepInterval"  (func $--setStepInterval (param f64) ))
 
+      
+      ;; memory
+      (memory $-memory 2) 
+(data (i32.const 65536) "memory")
+(data (i32.const 65544) "env")
+(data (i32.const 65552) "pushFromMemory")
+(data (i32.const 65568) "popToMemory")
+(data (i32.const 65584) "getBufferSize")
+(data (i32.const 65600) "log")
+(data (i32.const 65608) "setDisplayMode")
+(data (i32.const 65624) "print")
+(data (i32.const 65632) "displayMemory")
+(data (i32.const 65648) "startTone")
+(data (i32.const 65664) "stopTone")
+(data (i32.const 65680) "focusInput")
+(data (i32.const 65696) "getGameAxisX")
+(data (i32.const 65712) "getGameAxisY")
+(data (i32.const 65728) "getGameButtonA")
+(data (i32.const 65744) "getGameButtonB")
+(data (i32.const 65760) "getGameButtonX")
+(data (i32.const 65776) "getGameButtonY")
+(data (i32.const 65792) "setStepInterval")
 
-      ;; stdlib
-      (func $address_of (param $id i32) (result i32)
-  (call $-number (f64.convert_u/i32 (call $-offset (get_local $id))))
-)
-(func $size_of (param $id i32) (result i32)
-  (call $-number (f64.convert_u/i32 (call $-len (get_local $id))))
-)
+      
+      ;; table
+      (table $-table 0 anyfunc)
+
+      
+      ;; globals
+      (global $displayWidth (mut i32) (i32.const 0))
+(global $displayHeight (mut i32) (i32.const 0))
+(global $display (mut i32) (i32.const 0))
+
+      
+      ;; functions
+      (func $_pushFromMemory(param $p0 i32) (param $p1 i32) (result i32)
+(call $--_pushFromMemory (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
+(func $_popToMemory(param $p0 i32) (result i32)
+(call $--_popToMemory (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
+(func $_getBufferSize(result i32)
+(call $--_getBufferSize )(call $-number))
+(func $_log(result i32)
+(call $--_log )(i32.const 0))
+(func $setDisplayMode(param $p0 i32) (param $p1 i32) (param $p2 i32) (result i32)
+(call $--setDisplayMode (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) (call $-f64 (call $-toNumber (get_local $p2))) )(i32.const 0))
+(func $_print(result i32)
+(call $--_print )(i32.const 0))
+(func $_displayMemory(param $p0 i32) (param $p1 i32) (result i32)
+(call $--_displayMemory (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
+(func $startTone(param $p0 i32) (param $p1 i32) (result i32)
+(call $--startTone (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
+(func $stopTone(param $p0 i32) (result i32)
+(call $--stopTone (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
+(func $focusInput(param $p0 i32) (result i32)
+(call $--focusInput (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
+(func $getGameAxisX(result i32)
+(call $--getGameAxisX )(call $-number))
+(func $getGameAxisY(result i32)
+(call $--getGameAxisY )(call $-number))
+(func $getGameButtonA(result i32)
+(call $--getGameButtonA )(call $-number))
+(func $getGameButtonB(result i32)
+(call $--getGameButtonB )(call $-number))
+(func $getGameButtonX(result i32)
+(call $--getGameButtonX )(call $-number))
+(func $getGameButtonY(result i32)
+(call $--getGameButtonY )(call $-number))
+(func $setStepInterval(param $p0 i32) (result i32)
+(call $--setStepInterval (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
+(func $pushFromMemory (param $str i32) (result i32)
+(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $str))(block
+(drop (call $_pushFromMemory (call $address_of (get_local $str) ) (call $size_of (get_local $str) ) ))
+
+(set_local $-success (i32.const 1)))
+(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
+
+(func $popToMemory (result i32)
+(local $len i32)(local $str i32)(local $-ret i32)(local $-success i32)(call $-funcstart)(block
+(set_local $len (call $-reref (get_local $len) (call $_getBufferSize )))
+
+(set_local $str (call $-reref (get_local $str) (i32.const 3)))
+
+(drop (call $write8 (get_local $str) (call $-sub (get_local $len) (call $-number (f64.const 1))) (call $-number (f64.const 0)) ))
+
+(drop (call $_popToMemory (call $address_of (get_local $str) ) ))
+
+(return (tee_local $-ret (get_local $str)))
+
+(set_local $-success (i32.const 1)))
+(call $-deref (get_local $len))(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
+
+(func $log (param $message i32) (result i32)
+(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $message))(block
+(drop (call $pushFromMemory (call $-add (i32.const 3) (get_local $message)) ))
+
+(drop (call $_log ))
+
+(set_local $-success (i32.const 1)))
+(call $-deref (get_local $message))(call $-funcend)(get_local $-ret))
+
+(func $print (param $str i32) (result i32)
+(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $str))(block
+(drop (call $pushFromMemory (call $-add (i32.const 3) (get_local $str)) ))
+
+(drop (call $_print ))
+
+(set_local $-success (i32.const 1)))
+(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
+
+(func $displayMemory (result i32)
+(local $-ret i32)(local $-success i32)(call $-funcstart)(block
+(drop (call $_displayMemory (call $address_of (get_global $display) ) (call $size_of (get_global $display) ) ))
+
+(set_local $-success (i32.const 1)))
+(call $-funcend)(get_local $-ret))
+
+(func $pset (param $x i32) (param $y i32) (param $c i32) (result i32)
+(local $index i32)(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $x))(call $-ref (get_local $y))(call $-ref (get_local $c))(block
+(set_local $index (call $-reref (get_local $index) (call $-mul (call $-number (f64.const 4)) (call $-add (call $-mul (get_local $y) (get_global $displayWidth)) (get_local $x)))))
+
+(if (call $-truthy (call $-and (call $-ge (get_local $index) (call $-number (f64.const 0))) (call $-lt (get_local $index) (call $size_of (get_global $display) ))))
+(then (block
+(drop (call $write32 (get_global $display) (get_local $index) (get_local $c) ))
+
+(set_local $-success (i32.const 1)))
+)(else (set_local $-success (i32.const 0))))
+(set_local $-success (i32.const 1)))
+(call $-deref (get_local $x))(call $-deref (get_local $y))(call $-deref (get_local $c))(call $-deref (get_local $index))(call $-funcend)(get_local $-ret))
 
 
-(func $read8 (param $id i32) (param $posId i32) (result i32)
-  (call $-number (f64.convert_u/i32 (call $-read8 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
+      
+      ;; start
+      (func $-start
+        (local $-success i32)
+        (call $-initruntime)
+(call $-string (i32.const 65536) (i32.const 6))
+(call $-string (i32.const 65544) (i32.const 3))
+(call $-string (i32.const 65552) (i32.const 14))
+(call $-string (i32.const 65568) (i32.const 11))
+(call $-string (i32.const 65584) (i32.const 13))
+(call $-string (i32.const 65600) (i32.const 3))
+(call $-string (i32.const 65608) (i32.const 14))
+(call $-string (i32.const 65624) (i32.const 5))
+(call $-string (i32.const 65632) (i32.const 13))
+(call $-string (i32.const 65648) (i32.const 9))
+(call $-string (i32.const 65664) (i32.const 8))
+(call $-string (i32.const 65680) (i32.const 10))
+(call $-string (i32.const 65696) (i32.const 12))
+(call $-string (i32.const 65712) (i32.const 12))
+(call $-string (i32.const 65728) (i32.const 14))
+(call $-string (i32.const 65744) (i32.const 14))
+(call $-string (i32.const 65760) (i32.const 14))
+(call $-string (i32.const 65776) (i32.const 14))
+(call $-string (i32.const 65792) (i32.const 15))
+(set_global $displayWidth (call $-reref (get_global $displayWidth) (call $-number (f64.const 64))))
+(set_global $displayHeight (call $-reref (get_global $displayHeight) (call $-number (f64.const 64))))
+(set_global $display (call $-reref (get_global $display) (call $-newValue (i32.const 6) (i32.const 0))))
+(drop (call $log (call $-sub (call $-mul (call $-mul (call $-number (f64.const 4)) (get_global $displayWidth)) (get_global $displayHeight)) (call $-number (f64.const 1))) ))
 )
-(func $read16 (param $id i32) (param $posId i32) (result i32)
-  (call $-number (f64.convert_u/i32 (call $-read16 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
-)
-(func $read32 (param $id i32) (param $posId i32) (result i32)
-  (call $-number (f64.convert_u/i32 (call $-read32 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
-)
+      (start $-start)
+      
+      ;; exports
+      (export "memory" (memory $-memory))
 
-(func $write8 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
-  (local $data i32)
-  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
-    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
-  )(else
-    (set_local $data (call $-read8 (get_local $dataId) (i32.const 0)))
-  ))
-  (call $-write8 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
-  (i32.const 0)
-)
-(func $write16 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
-  (local $data i32)
-  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
-    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
-  )(else
-    (set_local $data (call $-read16 (get_local $dataId) (i32.const 0)))
-  ))
-  (call $-write16 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
-  (i32.const 0)
-)
-(func $write32 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
-  (local $data i32)
-  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
-    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
-  )(else
-    (set_local $data (call $-read32 (get_local $dataId) (i32.const 0)))
-  ))
-  (call $-write32 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
-  (i32.const 0)
-)
-
-
+      
       ;; runtime
-      ;; memory management
+      (func $-getMindex (result i32)
+  (i32.mul (i32.div_u (get_global $-mindex) (i32.const 8)) (i32.const 8))
+)
+(export "getMindex" (func $-getMindex))
+(func $-loadF64 (param $offset i32) (result f64)
+  (f64.load (get_local $offset))
+)
+(export "loadF64" (func $-loadF64))
+
+;; memory management
 (func $-initruntime
   (i32.store (i32.const 0) (i32.sub (i32.mul (i32.const 65536) (current_memory)) (i32.const 8)))
   (set_global $-mindex (call $-alloc (i32.const 8)))
@@ -806,253 +928,55 @@
 
 
 
-
-      ;; memory
-      (memory $-memory 16) 
-(data (i32.const 65536) "\c3\a6\c3\b8\c3\a5")
-(data (i32.const 65544) "init")
-(data (i32.const 65552) "step")
-(data (i32.const 65560) "display")
-(data (i32.const 65568) "memory")
-(data (i32.const 65576) "env")
-(data (i32.const 65584) "pushFromMemory")
-(data (i32.const 65600) "popToMemory")
-(data (i32.const 65616) "getBufferSize")
-(data (i32.const 65632) "log")
-(data (i32.const 65640) "setDisplayMode")
-(data (i32.const 65656) "print")
-(data (i32.const 65664) "displayMemory")
-(data (i32.const 65680) "startTone")
-(data (i32.const 65696) "stopTone")
-(data (i32.const 65712) "focusInput")
-(data (i32.const 65728) "getGameAxisX")
-(data (i32.const 65744) "getGameAxisY")
-(data (i32.const 65760) "getGameButtonA")
-(data (i32.const 65776) "getGameButtonB")
-(data (i32.const 65792) "getGameButtonX")
-(data (i32.const 65808) "getGameButtonY")
-(data (i32.const 65824) "setStepInterval")
-
-
-      ;; table
-      (table $-table 0 anyfunc)
-
-
-      ;; globals
-      (global $playerDX (mut i32) (i32.const 0))
-(global $playerDY (mut i32) (i32.const 0))
-(global $playerX (mut i32) (i32.const 0))
-(global $playerY (mut i32) (i32.const 0))
-(global $white (mut i32) (i32.const 0))
-(global $displayWidth (mut i32) (i32.const 0))
-(global $displayHeight (mut i32) (i32.const 0))
-(global $display (mut i32) (i32.const 0))
-
-
-      ;; functions
-      (func $init (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(block
-(drop (call $setDisplayMode (call $-number (f64.const 1)) (get_global $displayWidth) (get_global $displayHeight) ))
-
-(drop (call $setStepInterval (call $-number (f64.const 256)) ))
-
-(drop (call $focusInput (call $-number (f64.const 3)) ))
-
-(set_local $-success (i32.const 1)))
-(call $-funcend)(get_local $-ret))
-
-(func $step (param $t i32) (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $t))(block
-(if (call $-truthy (call $-gt (call $getGameAxisX ) (call $-number (f64.const 0.5))))
-(then (block
-(set_global $playerDX (call $-reref (get_global $playerDX) (call $-number (f64.const 1))))
-
-(set_global $playerDY (call $-reref (get_global $playerDY) (call $-number (f64.const 0))))
-
-(set_local $-success (i32.const 1)))
-)(else (set_local $-success (i32.const 0))))
-(if (call $-truthy (call $-lt (call $getGameAxisX ) (call $-sub (call $-number (f64.const 0)) (call $-number (f64.const 0.5)))))
-(then (block
-(set_global $playerDX (call $-reref (get_global $playerDX) (call $-sub (call $-number (f64.const 0)) (call $-number (f64.const 1)))))
-
-(set_global $playerDY (call $-reref (get_global $playerDY) (call $-number (f64.const 0))))
-
-(set_local $-success (i32.const 1)))
-)(else (set_local $-success (i32.const 0))))
-(if (call $-truthy (call $-gt (call $getGameAxisY ) (call $-number (f64.const 0.5))))
-(then (block
-(set_global $playerDX (call $-reref (get_global $playerDX) (call $-number (f64.const 0))))
-
-(set_global $playerDY (call $-reref (get_global $playerDY) (call $-number (f64.const 1))))
-
-(set_local $-success (i32.const 1)))
-)(else (set_local $-success (i32.const 0))))
-(if (call $-truthy (call $-lt (call $getGameAxisY ) (call $-sub (call $-number (f64.const 0)) (call $-number (f64.const 0.5)))))
-(then (block
-(set_global $playerDX (call $-reref (get_global $playerDX) (call $-number (f64.const 0))))
-
-(set_global $playerDY (call $-reref (get_global $playerDY) (call $-sub (call $-number (f64.const 0)) (call $-number (f64.const 1)))))
-
-(set_local $-success (i32.const 1)))
-)(else (set_local $-success (i32.const 0))))
-(set_global $playerX (call $-reref (get_global $playerX) (call $-add (get_global $playerX) (get_global $playerDX))))
-
-(set_global $playerY (call $-reref (get_global $playerY) (call $-add (get_global $playerY) (get_global $playerDY))))
-
-(drop (call $pset (get_global $playerX) (get_global $playerY) (get_global $white) ))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $t))(call $-funcend)(get_local $-ret))
-
-(func $render (param $t i32) (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $t))(block
-(drop (call $displayMemory ))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $t))(call $-funcend)(get_local $-ret))
-
-(func $_pushFromMemory(param $p0 i32) (param $p1 i32) (result i32)
-(call $--_pushFromMemory (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
-(func $_popToMemory(param $p0 i32) (result i32)
-(call $--_popToMemory (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
-(func $_getBufferSize(result i32)
-(call $--_getBufferSize )(call $-number))
-(func $_log(result i32)
-(call $--_log )(i32.const 0))
-(func $setDisplayMode(param $p0 i32) (param $p1 i32) (param $p2 i32) (result i32)
-(call $--setDisplayMode (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) (call $-f64 (call $-toNumber (get_local $p2))) )(i32.const 0))
-(func $_print(result i32)
-(call $--_print )(i32.const 0))
-(func $_displayMemory(param $p0 i32) (param $p1 i32) (result i32)
-(call $--_displayMemory (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
-(func $startTone(param $p0 i32) (param $p1 i32) (result i32)
-(call $--startTone (call $-f64 (call $-toNumber (get_local $p0))) (call $-f64 (call $-toNumber (get_local $p1))) )(i32.const 0))
-(func $stopTone(param $p0 i32) (result i32)
-(call $--stopTone (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
-(func $focusInput(param $p0 i32) (result i32)
-(call $--focusInput (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
-(func $getGameAxisX(result i32)
-(call $--getGameAxisX )(call $-number))
-(func $getGameAxisY(result i32)
-(call $--getGameAxisY )(call $-number))
-(func $getGameButtonA(result i32)
-(call $--getGameButtonA )(call $-number))
-(func $getGameButtonB(result i32)
-(call $--getGameButtonB )(call $-number))
-(func $getGameButtonX(result i32)
-(call $--getGameButtonX )(call $-number))
-(func $getGameButtonY(result i32)
-(call $--getGameButtonY )(call $-number))
-(func $setStepInterval(param $p0 i32) (result i32)
-(call $--setStepInterval (call $-f64 (call $-toNumber (get_local $p0))) )(i32.const 0))
-(func $pushFromMemory (param $str i32) (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $str))(block
-(drop (call $_pushFromMemory (call $address_of (get_local $str) ) (call $size_of (get_local $str) ) ))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
-
-(func $popToMemory (result i32)
-(local $len i32)(local $str i32)(local $-ret i32)(local $-success i32)(call $-funcstart)(block
-(set_local $len (call $-reref (get_local $len) (call $_getBufferSize )))
-
-(set_local $str (call $-reref (get_local $str) (i32.const 3)))
-
-(drop (call $write8 (get_local $str) (call $-sub (get_local $len) (call $-number (f64.const 1))) (call $-number (f64.const 0)) ))
-
-(drop (call $_popToMemory (call $address_of (get_local $str) ) ))
-
-(return (tee_local $-ret (get_local $str)))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $len))(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
-
-(func $log (param $message i32) (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $message))(block
-(drop (call $pushFromMemory (get_local $message) ))
-
-(drop (call $_log ))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $message))(call $-funcend)(get_local $-ret))
-
-(func $print (param $str i32) (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $str))(block
-(drop (call $pushFromMemory (get_local $str) ))
-
-(drop (call $_print ))
-
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $str))(call $-funcend)(get_local $-ret))
-
-(func $displayMemory (result i32)
-(local $-ret i32)(local $-success i32)(call $-funcstart)(block
-(drop (call $_displayMemory (call $address_of (get_global $display) ) (call $size_of (get_global $display) ) ))
-
-(set_local $-success (i32.const 1)))
-(call $-funcend)(get_local $-ret))
-
-(func $pset (param $x i32) (param $y i32) (param $c i32) (result i32)
-(local $index i32)(local $-ret i32)(local $-success i32)(call $-funcstart)(call $-ref (get_local $x))(call $-ref (get_local $y))(call $-ref (get_local $c))(block
-(set_local $index (call $-reref (get_local $index) (call $-mul (call $-number (f64.const 4)) (call $-add (call $-mul (get_local $y) (get_global $displayWidth)) (get_local $x)))))
-
-(if (call $-truthy (call $-and (call $-ge (get_local $index) (call $-number (f64.const 0))) (call $-lt (get_local $index) (call $size_of (get_global $display) ))))
-(then (block
-(drop (call $write32 (get_global $display) (get_local $index) (get_local $c) ))
-
-(set_local $-success (i32.const 1)))
-)(else (set_local $-success (i32.const 0))))
-(set_local $-success (i32.const 1)))
-(call $-deref (get_local $x))(call $-deref (get_local $y))(call $-deref (get_local $c))(call $-deref (get_local $index))(call $-funcend)(get_local $-ret))
-
-
-
-      ;; start
-      (func $-start
-        (local $-success i32)
-      (call $-initruntime)
-(call $-string (i32.const 65536) (i32.const 6))
-(call $-string (i32.const 65544) (i32.const 4))
-(call $-string (i32.const 65552) (i32.const 4))
-(call $-string (i32.const 65560) (i32.const 7))
-(call $-string (i32.const 65568) (i32.const 6))
-(call $-string (i32.const 65576) (i32.const 3))
-(call $-string (i32.const 65584) (i32.const 14))
-(call $-string (i32.const 65600) (i32.const 11))
-(call $-string (i32.const 65616) (i32.const 13))
-(call $-string (i32.const 65632) (i32.const 3))
-(call $-string (i32.const 65640) (i32.const 14))
-(call $-string (i32.const 65656) (i32.const 5))
-(call $-string (i32.const 65664) (i32.const 13))
-(call $-string (i32.const 65680) (i32.const 9))
-(call $-string (i32.const 65696) (i32.const 8))
-(call $-string (i32.const 65712) (i32.const 10))
-(call $-string (i32.const 65728) (i32.const 12))
-(call $-string (i32.const 65744) (i32.const 12))
-(call $-string (i32.const 65760) (i32.const 14))
-(call $-string (i32.const 65776) (i32.const 14))
-(call $-string (i32.const 65792) (i32.const 14))
-(call $-string (i32.const 65808) (i32.const 14))
-(call $-string (i32.const 65824) (i32.const 15))
-(set_global $playerDX (call $-reref (get_global $playerDX) (call $-number (f64.const 1))))
-(set_global $playerDY (call $-reref (get_global $playerDY) (call $-number (f64.const 0))))
-(set_global $playerX (call $-reref (get_global $playerX) (call $-number (f64.const 8))))
-(set_global $playerY (call $-reref (get_global $playerY) (call $-number (f64.const 8))))
-(set_global $white (call $-reref (get_global $white) (i32.const 8)))
-(set_global $displayWidth (call $-reref (get_global $displayWidth) (call $-number (f64.const 64))))
-(set_global $displayHeight (call $-reref (get_global $displayHeight) (call $-number (f64.const 64))))
-(set_global $display (call $-reref (get_global $display) (call $-newValue (i32.const 6) (i32.const 0))))
-(drop (call $write8 (get_global $display) (call $-sub (call $-mul (call $-mul (call $-number (f64.const 4)) (get_global $displayWidth)) (get_global $displayHeight)) (call $-number (f64.const 1))) (call $-number (f64.const 0)) ))
-)
-      (start $-start)
       
-      ;; exports
-      (func $--init
-(result f64)(call $-f64 (call $init)))(export "init" (func $--init))
-(func $--step
-(param $t f64)(result f64)(call $-f64 (call $step(call $-number (get_local $t)))))(export "step" (func $--step))
-(func $--render
-(param $t f64)(result f64)(call $-f64 (call $render(call $-number (get_local $t)))))(export "display" (func $--render))
-(export "memory" (memory $-memory))
+      ;; stdlib
+      (func $address_of (param $id i32) (result i32)
+  (call $-number (f64.convert_u/i32 (call $-offset (get_local $id))))
+)
+(func $size_of (param $id i32) (result i32)
+  (call $-number (f64.convert_u/i32 (call $-len (get_local $id))))
+)
+
+
+(func $read8 (param $id i32) (param $posId i32) (result i32)
+  (call $-number (f64.convert_u/i32 (call $-read8 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
+)
+(func $read16 (param $id i32) (param $posId i32) (result i32)
+  (call $-number (f64.convert_u/i32 (call $-read16 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
+)
+(func $read32 (param $id i32) (param $posId i32) (result i32)
+  (call $-number (f64.convert_u/i32 (call $-read32 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) )))
+)
+
+(func $write8 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
+  (local $data i32)
+  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
+    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
+  )(else
+    (set_local $data (call $-read8 (get_local $dataId) (i32.const 0)))
+  ))
+  (call $-write8 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
+  (i32.const 0)
+)
+(func $write16 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
+  (local $data i32)
+  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
+    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
+  )(else
+    (set_local $data (call $-read16 (get_local $dataId) (i32.const 0)))
+  ))
+  (call $-write16 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
+  (i32.const 0)
+)
+(func $write32 (param $id i32) (param $posId i32) (param $dataId i32) (result i32)
+  (local $data i32)
+  (if (i32.lt_u (call $-datatype (get_local $dataId)) (i32.const 3))(then
+    (set_local $data (i32.trunc_s/f64 (call $-f64 (call $-toNumber (get_local $dataId)))))
+  )(else
+    (set_local $data (call $-read32 (get_local $dataId) (i32.const 0)))
+  ))
+  (call $-write32 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
+  (i32.const 0)
+)
 
     )
