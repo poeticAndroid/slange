@@ -1,33 +1,91 @@
-@import "env" "logNumber" logNumber 1 0
-@import "env" "log" _log 2 0
-
-@export_memory "memory"
-
-@func log msg
-  _log (address_of msg) (size_of msg)
-
-@set meaning_of_life = 42
-@set meaning_of_life2 = 43
-@set name = "Hello \"world\"! 🤖"
-
-@set friends =
-  "Alice"
-  "Bob"
-  "Charlie"
-  "Dennis"
-
-
-@func sum a b
-  @set tableindex = (# init)
-  @return a + b + meaning_of_life
+~~~ THE MAIN EVENT! ~~~
+@set playerDX = 1
+@set playerDY = 0
+@set playerX = 8
+@set playerY = 8
+@set white = "æøå"
 
 @export "init" init
-  @set tableindex = (# sum)
-  logNumber sum 2 meaning_of_life2
-  log name + " " + -32.00125
-  @set friend = friends 2
-  @set i = 10
-  @if i > 0
-    log "yay!"
-  @else
-    log "nay..."
+  setDisplayMode 1 displayWidth displayHeight
+  setStepInterval 256
+  focusInput 3
+
+@export "step" step t
+  @if getGameAxisX > .5
+    @set playerDX = 1
+    @set playerDY = 0
+  @if getGameAxisX < -.5
+    @set playerDX = -1
+    @set playerDY = 0
+  @if getGameAxisY > .5
+    @set playerDX = 0
+    @set playerDY = 1
+  @if getGameAxisY < -.5
+    @set playerDX = 0
+    @set playerDY = -1
+  @set playerX += playerDX
+  @set playerY += playerDY
+  pset (playerX) (playerY) white
+
+@export "display" render t
+  displayMemory
+
+
+
+
+~~~ some boring setup ~~~
+@export_memory "memory"
+@import "env" "pushFromMemory" _pushFromMemory 2 0
+@import "env" "popToMemory" _popToMemory 1 0
+@import "env" "getBufferSize" _getBufferSize 0 1
+@import "env" "log" _log 0 0
+@import "env" "setDisplayMode" setDisplayMode 3 0
+@import "env" "print" _print 0 0
+@import "env" "displayMemory" _displayMemory 2 0
+@import "env" "startTone" startTone 2 0
+@import "env" "stopTone" stopTone 1 0
+@import "env" "focusInput" focusInput 1 0
+@import "env" "getGameAxisX" getGameAxisX 0 1
+@import "env" "getGameAxisY" getGameAxisY 0 1
+@import "env" "getGameButtonA" getGameButtonA 0 1
+@import "env" "getGameButtonB" getGameButtonB 0 1
+@import "env" "getGameButtonX" getGameButtonX 0 1
+@import "env" "getGameButtonY" getGameButtonY 0 1
+@import "env" "setStepInterval" setStepInterval 1 0
+
+
+@func pushFromMemory str
+  _pushFromMemory (address_of str) (size_of str)
+
+@func popToMemory
+  @set len = _getBufferSize
+  @set str = ""
+  write8 str (len-1) 0
+  _popToMemory (address_of str)
+  @return str
+
+
+@func log message
+  pushFromMemory message
+  _log
+
+@func print str
+  pushFromMemory str
+  _print
+
+@set displayWidth = 64
+@set displayHeight = 64
+@set display = @binary
+write8 display (4*displayWidth*displayHeight)-1 0
+
+@func displayMemory
+  _displayMemory (address_of display) (size_of display)
+
+@func pset x y c
+  @set index = 4 * (y * displayWidth + x)
+  @if index >= 0 &&  index < ( size_of display )
+    write32 display index c
+
+
+
+

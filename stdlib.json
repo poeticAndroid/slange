@@ -4,5 +4,32 @@
   ],
   "size_of": [
     "val"
+  ],
+  "read8": [
+    "strbin",
+    "pos"
+  ],
+  "read16": [
+    "strbin",
+    "pos"
+  ],
+  "read32": [
+    "strbin",
+    "pos"
+  ],
+  "write8": [
+    "strbin",
+    "pos",
+    "data"
+  ],
+  "write16": [
+    "strbin",
+    "pos",
+    "data"
+  ],
+  "write32": [
+    "strbin",
+    "pos",
+    "data"
   ]
 }

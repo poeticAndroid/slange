@@ -69,7 +69,7 @@ function escapeStr(str) {
     } else if (buf[i] > 34 && buf[i] < 127) {
       str += String.fromCharCode(buf[i])
     } else {
-      str += "\\" + buf[i].toString(16)
+      str += "\\" + ("0" + buf[i].toString(16)).substr(-2)
     }
   }
   return str
@@ -148,7 +148,7 @@ function nextToken(c) {
   if (c.metaphors[token]) token = c.metaphors[token]
   if (isString(token)) {
     let str = JSON.parse(token)
-    if (str) {
+    if (str && !c.strings.includes(str)) {
       c.strings.push(str)
     }
   }
@@ -226,7 +226,7 @@ function compileModule(c) {
   let imports = ""
   let stdlib = fs.readFileSync("stdlib.wast")
   let runtime = fs.readFileSync("runtime.wast")
-  let memory = `(memory $-memory 2) \n`
+  let memory = `(memory $-memory 16) \n`
   let table = ""
   let globals = ""
   let functions = ""
@@ -386,7 +386,13 @@ function compileFunction(tokenTree, globals) {
         wast += `(local $${locals[i]} i32)`
       }
       wast += `(local $-ret i32)(local $-success i32)(call $-funcstart)`
+      for (let i = 0; i < paramlength; i++) {
+        wast += `(call $-ref (get_local $${locals[i]}))`
+      }
       wast += block
+      for (let i = 0; i < locals.length; i++) {
+        wast += `(call $-deref (get_local $${locals[i]}))`
+      }
       wast += `(call $-funcend)(get_local $-ret)`
     }
   }
@@ -625,6 +631,10 @@ function compileExpression(tokenTree, globals, locals) {
     if (token === "@true") {
       values.pop()
       values.push(`(i32.const 5)`)
+    }
+    if (token === "@binary") {
+      values.pop()
+      values.push(`(call $-newValue (i32.const 6) (i32.const 0))`)
     }
     if (isNumber(token)) {
       let num = values.pop()
