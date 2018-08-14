@@ -7,25 +7,28 @@
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
-  ~setStepInterval 256
+  setStepInterval 256
   focusInput 3
 
 @export "step" step t
-  @if getGameAxisX > .5
+  @set gameX = getGameAxisX
+  @set gameY = getGameAxisY
+  @if gameX > 0.5
     @set playerDX = 1
     @set playerDY = 0
-  @if getGameAxisX < -.5
+  @if gameX < -0.5
     @set playerDX = -1
     @set playerDY = 0
-  @if getGameAxisY > .5
+  @if gameY > 0.5
     @set playerDX = 0
     @set playerDY = 1
-  @if getGameAxisY < -.5
+  @if gameY < -0.5
     @set playerDX = 0
     @set playerDY = -1
   @set playerX += playerDX
   @set playerY += playerDY
-  pset (playerX) (playerY) white
+  pset playerX playerY white
+  log6Numbers  gameX gameY  playerDX playerDY  playerX playerY
 
 @export "display" render t
   displayMemory
@@ -39,6 +42,9 @@
 @import "env" "popToMemory" _popToMemory 1 0
 @import "env" "getBufferSize" _getBufferSize 0 1
 @import "env" "log" _log 0 0
+@import "env" "logNumber" log1Number 1 0
+@import "env" "logNumber" log2Numbers 2 0
+@import "env" "logNumber" log6Numbers 6 0
 @import "env" "setDisplayMode" setDisplayMode 3 0
 @import "env" "print" _print 0 0
 @import "env" "displayMemory" _displayMemory 2 0

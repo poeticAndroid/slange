@@ -46,3 +46,10 @@
   (call $-write32 (get_local $id) (i32.trunc_u/f64 (call $-f64 (get_local $posId))) (get_local $data))
   (i32.const 0)
 )
+
+(func $toNumber (param $id i32) (result i32)
+  (call $-toNumber (get_local $id))
+)
+(func $datatype (param $id i32) (result i32)
+  (call $-datatype (get_local $id))
+)

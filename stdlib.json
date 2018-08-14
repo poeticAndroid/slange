@@ -31,5 +31,11 @@
     "strbin",
     "pos",
     "data"
+  ],
+  "toNumber": [
+    "val"
+  ],
+  "datatype": [
+    "val"
   ]
 }

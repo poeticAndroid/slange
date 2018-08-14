@@ -233,6 +233,7 @@ function compileModule(c) {
   let exports = ""
   let runtime = fs.readFileSync("runtime.wast")
   let stdlib = fs.readFileSync("stdlib.wast")
+  let gc = ""
 
   let offset = 1024 * 64
   for (let i = 8; i < c.strings.length; i++) {
@@ -331,6 +332,15 @@ function compileModule(c) {
     }
     exports += `)))\n`
   }
+  gc += `(func $-traceGC\n`
+  gc += `(call $-zerorefs)\n`
+  for (let g in c.globals) {
+    if (c.globals[g] === true) {
+      gc += `(call $-reftree (get_global $${g}))\n`
+    }
+  }
+  gc += `(call $-garbagecollect)\n`
+  gc += `)\n`
 
   return `
     (module
@@ -363,6 +373,9 @@ function compileModule(c) {
       
       ;; stdlib
       ${stdlib}
+      
+      ;; gc
+      ${gc}
     )
   `.trim()
 }
@@ -372,6 +385,7 @@ function compileFunction(tokenTree, globals) {
   let locals = []
   tokenTree = deparens(tokenTree, true)
 
+  wast += `\n;; function $${tokenTree[1]} \n`
   wast += `(func $${tokenTree[1]} `
   for (let i = 2; i < tokenTree.length; i++) {
     if (isIdentifier(tokenTree[i])) {
