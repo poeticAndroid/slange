@@ -50,12 +50,12 @@
 
     ;; is this the end of memory?
     (if (i32.le_u (i32.sub (i32.mul (i32.const 65536) (current_memory)) (get_local $offset)) (i32.const 8))(then
+      (set_local $offset2 (i32.add (i32.mul (i32.const 65536) (current_memory)) (i32.const 8)))
       (drop (grow_memory (i32.const 1)))
-      (set_local $offset2 (i32.add (i32.add (get_local $offset) (get_local $space)) (i32.const 4)))
-      (set_local $offset2 (i32.add (i32.mul (i32.div_u (get_local $offset2) (i32.const 8)) (i32.const 8)) (i32.const 8)))
       (i32.store (get_local $offset2) (i32.sub (i32.mul (i32.const 65536) (current_memory)) (i32.add (i32.const 8) (get_local $offset2))))
-      (call $-dealloc (get_local $offset))
-      (set_local $offset (i32.const 4))
+      (call $-dealloc (i32.sub (get_local $offset2) (i32.const 8)))
+      (set_local $space (i32.load (i32.const 0)))
+      (set_local $offset (i32.add  (get_local $space) (i32.const 4)))
       (set_local $space (i32.load (get_local $offset)))
     ))
     
