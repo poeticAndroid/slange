@@ -18,9 +18,9 @@
 (global $-calls (mut i32) (i32.const 0))
 ;; function wrapper
 (func $-funcstart
-  ;; (if (i32.eqz (get_global $-calls))(then
-  ;;   (call $-traceGC)
-  ;; ))
+  (if (i32.eqz (get_global $-calls))(then
+    (call $-traceGC)
+  ))
   (set_global $-calls (i32.add (get_global $-calls) (i32.const 1)))
 )
 (func $-funcend
@@ -324,13 +324,16 @@
   (local $datatype i32)
   (local $refs i32)
   (set_local $offset (call $-offset (get_local $id)))
+  ;; is it even in memory?
   (if (get_local $offset) (then
     (set_local $id (i32.sub (get_local $id) (i32.const 8)))
     (set_local $refs (call $-read32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4))))
+    ;; is it unreferenced?
     (if (i32.eqz (get_local $refs))(then
       (call $-write32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4)) (i32.const 1))
       (set_local $id (i32.add (get_local $id) (i32.const 8)))
       (set_local $datatype (call $-datatype (get_local $id)))
+      ;; is it array/object?
       (if (i32.eq (i32.and (get_local $datatype) (i32.const 6)) (i32.const 4))(then
         (set_local $offset (call $-len (get_local $id)))
         (block(loop (br_if 1 (i32.eqz (get_local $offset)))

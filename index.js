@@ -243,6 +243,7 @@ function compileModule(c) {
     offset += len
     offset = Math.floor(offset / 8) * 8 + 8
   }
+  start += `(call $-zerorefs)\n`
   c.globals["-string"] = c.strings
   c.globals["-table"] = []
 
