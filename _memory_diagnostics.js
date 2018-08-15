@@ -2,7 +2,7 @@
  * Memory diagnostics
  */
 
-function getValue(id) {
+function getValue(id, datatype) {
   if (id < 8) {
     return [null, false, 0, "", undefined, true][id]
   }
@@ -13,7 +13,7 @@ function getValue(id) {
 
   let item = {}
   item.offset = Math.floor(mem[i / 4] / 8) * 8
-  item.datatype = mem[i / 4] % 8
+  item.datatype = datatype || mem[i / 4] % 8
   item.len = mem[item.offset / 4 - 1]
   item.refs = mem[i / 4 + 1]
   switch (item.datatype) {

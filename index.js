@@ -465,6 +465,7 @@ function compileStatement(tokenTree, globals, locals) {
     }
     wast += `(${setter} (call $-reref ${compileExpression(variable, globals, locals)}`
     if (assigner[0] !== "=") {
+      tokenTree = [tokenTree]
       tokenTree.unshift(assigner[0])
       tokenTree.unshift(variable)
     }

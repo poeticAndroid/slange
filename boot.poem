@@ -1,34 +1,35 @@
 ~~~ THE MAIN EVENT! ~~~
-@set playerDX = 1
-@set playerDY = 0
-@set playerX = 8
-@set playerY = 8
+@set player =
+  "x" 8
+  "y" 8
+  "dx" 1
+  "dy" 0
 @set white = "æøå"
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
-  setStepInterval 256
+  ~ setStepInterval 256
   focusInput 3
 
 @export "step" step t
   @set gameX = getGameAxisX
   @set gameY = getGameAxisY
   @if gameX > 0.5
-    @set playerDX = 1
-    @set playerDY = 0
+    @set player "dx" = 1
+    @set player "dy" = 0
   @if gameX < -0.5
-    @set playerDX = -1
-    @set playerDY = 0
+    @set player "dx" = -1
+    @set player "dy" = 0
   @if gameY > 0.5
-    @set playerDX = 0
-    @set playerDY = 1
+    @set player "dx" = 0
+    @set player "dy" = 1
   @if gameY < -0.5
-    @set playerDX = 0
-    @set playerDY = -1
-  @set playerX += playerDX
-  @set playerY += playerDY
-  pset playerX playerY white
-  log6Numbers  gameX gameY  playerDX playerDY  playerX playerY
+    @set player "dx" = 0
+    @set player "dy" = -1
+  @set player "x" += player "dx"
+  @set player "y" += player "dy"
+  pset (player "x") (player "y") white
+  log2Numbers (player "x") (player "y")
 
 @export "display" render t
   displayMemory

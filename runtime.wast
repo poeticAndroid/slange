@@ -1,12 +1,12 @@
-;; (func $-getMindex (result i32)
-;;   (i32.mul (i32.div_u (get_global $-mindex) (i32.const 8)) (i32.const 8))
-;; )
-;; (export "getMindex" (func $-getMindex))
-;; (func $-loadF64 (param $offset i32) (result f64)
-;;   (f64.load (get_local $offset))
-;; )
-;; (export "loadF64" (func $-loadF64))
-;; (export "garbagecollect" (func $-garbagecollect))
+(func $-getMindex (result i32)
+  (i32.mul (i32.div_u (get_global $-mindex) (i32.const 8)) (i32.const 8))
+)
+(export "getMindex" (func $-getMindex))
+(func $-loadF64 (param $offset i32) (result f64)
+  (f64.load (get_local $offset))
+)
+(export "loadF64" (func $-loadF64))
+(export "garbagecollect" (func $-garbagecollect))
 
 ;; memory management
 (func $-initruntime
@@ -18,9 +18,9 @@
 (global $-calls (mut i32) (i32.const 0))
 ;; function wrapper
 (func $-funcstart
-  (if (i32.eqz (get_global $-calls))(then
-    (call $-traceGC)
-  ))
+  ;; (if (i32.eqz (get_global $-calls))(then
+  ;;   (call $-traceGC)
+  ;; ))
   (set_global $-calls (i32.add (get_global $-calls) (i32.const 1)))
 )
 (func $-funcend
@@ -737,14 +737,13 @@
   )(else
     (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
     (block(loop
-      (br_if 1 (call $-truthy (call $-equal (get_local $elem) (get_local $indexId))))
-      (set_local $index (i32.add (get_local $index) (i32.const 2)))
-      (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
       (if (i32.eqz (get_local $elem))(then
         (set_local $elem (get_local $indexId))
       ))
-      (br 0)
-    ))
+      (br_if 1 (call $-truthy (call $-equal (get_local $elem) (get_local $indexId))))
+      (set_local $index (i32.add (get_local $index) (i32.const 2)))
+      (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
+    (br 0)))
     (set_local $index (i32.add (get_local $index) (i32.const 1)))
     (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
   ))
@@ -758,16 +757,15 @@
     (call $-write32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4)) (get_local $valId))
   )(else
     (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
-    (block(loop
-      (br_if 1 (call $-truthy (call $-equal (get_local $elem) (get_local $indexId))))
-      (set_local $index (i32.add (get_local $index) (i32.const 2)))
-      (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
+    (block(loop 
       (if (i32.eqz (get_local $elem))(then
         (call $-write32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4)) (get_local $indexId))
         (set_local $elem (get_local $indexId))
       ))
-      (br 0)
-    ))
+      (br_if 1 (call $-truthy (call $-equal (get_local $elem) (get_local $indexId))))
+      (set_local $index (i32.add (get_local $index) (i32.const 2)))
+      (set_local $elem (call $-read32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4))))
+    (br 0)))
     (set_local $index (i32.add (get_local $index) (i32.const 1)))
     (call $-write32 (get_local $objId) (i32.mul (get_local $index) (i32.const 4)) (get_local $valId))
   ))
