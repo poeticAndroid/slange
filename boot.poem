@@ -8,7 +8,7 @@
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
-  ~ setStepInterval 256
+  setStepInterval 64
   focusInput 3
 
 @export "step" step t
@@ -29,7 +29,7 @@
   @set player "x" += player "dx"
   @set player "y" += player "dy"
   pset (player "x") (player "y") white
-  log2Numbers (player "x") (player "y")
+  ~ log2Numbers (player "x") (player "y")
 
 @export "display" render t
   displayMemory

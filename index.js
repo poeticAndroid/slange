@@ -648,6 +648,14 @@ function compileExpression(tokenTree, globals, locals) {
       values.pop()
       values.push(`(i32.const 5)`)
     }
+    if (token === "@array") {
+      values.pop()
+      values.push(`(call $-newValue (i32.const 4) (i32.const 0))`)
+    }
+    if (token === "@object") {
+      values.pop()
+      values.push(`(call $-newValue (i32.const 5) (i32.const 0))`)
+    }
     if (token === "@binary") {
       values.pop()
       values.push(`(call $-newValue (i32.const 6) (i32.const 0))`)

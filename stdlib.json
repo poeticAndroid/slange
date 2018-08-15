@@ -5,6 +5,26 @@
   "size_of": [
     "val"
   ],
+  "datatype_of": [
+    "val"
+  ],
+  "array_length": [
+    "array"
+  ],
+  "array_push": [
+    "array",
+    "value"
+  ],
+  "array_pop": [
+    "array"
+  ],
+  "array_unshift": [
+    "array",
+    "value"
+  ],
+  "array_shift": [
+    "array"
+  ],
   "read8": [
     "strbin",
     "pos"
@@ -31,11 +51,5 @@
     "strbin",
     "pos",
     "data"
-  ],
-  "toNumber": [
-    "val"
-  ],
-  "datatype": [
-    "val"
   ]
 }
