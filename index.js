@@ -401,13 +401,13 @@ function compileFunction(tokenTree, globals) {
         wast += `(local $${locals[i]} i32)`
       }
       wast += `(local $-ret i32)(local $-success i32)(call $-funcstart)`
-      for (let i = 0; i < paramlength; i++) {
+      /* for (let i = 0; i < paramlength; i++) {
         wast += `(call $-ref (get_local $${locals[i]}))`
-      }
+      } */
       wast += block
-      for (let i = 0; i < locals.length; i++) {
+      /* for (let i = 0; i < locals.length; i++) {
         wast += `(call $-deref (get_local $${locals[i]}))`
-      }
+      } */
       wast += `(call $-funcend)(get_local $-ret)`
     }
   }
@@ -464,13 +464,13 @@ function compileStatement(tokenTree, globals, locals) {
       locals.push(variable[0])
       setter = `set_local $${variable[0]}`
     }
-    wast += `(${setter} (call $-reref ${compileExpression(variable, globals, locals)}`
+    wast += `(${setter} `
     if (assigner[0] !== "=") {
       tokenTree = [tokenTree]
       tokenTree.unshift(assigner[0])
       tokenTree.unshift(variable)
     }
-    wast += ` ${compileExpression(tokenTree, globals, locals)}))\n`
+    wast += ` ${compileExpression(tokenTree, globals, locals)})\n`
   } else if (tokenTree[0] === "@if") {
     wast += `(if (call $-truthy ${compileExpression(tokenTree.slice(1, tokenTree.length - 1), globals, locals)})\n`
     wast += `(then ${compileBlock(tokenTree[tokenTree.length - 1], globals, locals)})`

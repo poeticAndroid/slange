@@ -82,7 +82,11 @@ function validateMindex() {
     item.offset = Math.floor(mem[i / 4] / 8) * 8
     //item.datatype = mem[i / 4] % 8
     item.refs = mem[i / 4 + 1]
-    item.value = getValue(id++)
+    try {
+      item.value = getValue(id++)
+    } catch (error) {
+      item.value = undefined
+    }
   }
   console.table(index)
 }

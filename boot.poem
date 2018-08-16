@@ -4,6 +4,9 @@
   "y" 8
   "dx" 1
   "dy" 0
+  "length" 16
+  "hist" @array
+@set black = "!!!!"
 @set white = "æøå"
 
 @export "init" init
@@ -12,6 +15,12 @@
   focusInput 3
 
 @export "step" step t
+  array_push (player "hist")
+    "x" (player "x")
+    "y" (player "y")
+  @if (array_length (player "hist")) > (player "length")
+    @set old = array_shift (player "hist")
+    pset (old "x") (old "y") black
   @set gameX = getGameAxisX
   @set gameY = getGameAxisY
   @if gameX > 0.5

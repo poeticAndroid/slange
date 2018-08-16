@@ -17,8 +17,12 @@
   (i32.const 0)
 )
 (func $array_pop (param $arrayId i32) (result i32)
-  (call $-read32 (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
-  (call $-resize (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
+  (local $elem i32)
+  (if (call $-len (get_local $arrayId))(then
+    (set_local $elem (call $-read32 (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4))))
+    (call $-resize (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
+  ))
+  (get_local $elem)
 )
 (func $array_unshift (param $arrayId i32) (param $valId i32) (result i32)
   (call $-resize (get_local $arrayId) (i32.add (call $-len (get_local $arrayId)) (i32.const 4)))
@@ -27,9 +31,13 @@
   (i32.const 0)
 )
 (func $array_shift (param $arrayId i32) (result i32)
-  (call $-read32 (get_local $arrayId) (i32.const 0))
-  (call $-memcopy (i32.add (call $-offset (get_local $arrayId)) (i32.const 4)) (call $-offset (get_local $arrayId)) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
-  (call $-resize (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
+  (local $elem i32)
+  (if (call $-len (get_local $arrayId))(then
+    (set_local $elem (call $-read32 (get_local $arrayId) (i32.const 0)))
+    (call $-memcopy (i32.add (call $-offset (get_local $arrayId)) (i32.const 4)) (call $-offset (get_local $arrayId)) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
+    (call $-resize (get_local $arrayId) (i32.sub (call $-len (get_local $arrayId)) (i32.const 4)))
+  ))
+  (get_local $elem)
 )
 
 
