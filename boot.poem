@@ -1,44 +1,45 @@
 ~~~ THE MAIN EVENT! ~~~
 @set player =
-  "x" 8
-  "y" 8
-  "dx" 1
-  "dy" 0
-  "length" 16
-  "hist" @array
+  :x = 8
+  :y = 8
+  :dx = 1
+  :dy = 0
+  :length = 16
+  :hist = @array
 @set black = "!!!!"
 @set white = "æøå"
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
+  log2Numbers displayWidth displayHeight
   setStepInterval 64
   focusInput 3
 
 @export "step" step t
-  array_push (player "hist")
-    "x" (player "x")
-    "y" (player "y")
-  @if (array_length (player "hist")) > (player "length")
-    @set old = array_shift (player "hist")
-    pset (old "x") (old "y") black
+  array_push player:hist
+    :x = player:x
+    :y = player:y
+  @if (array_length player:hist) > player:length
+    @set old = array_shift player:hist
+    pset old:x old:y black
   @set gameX = getGameAxisX
   @set gameY = getGameAxisY
   @if gameX > 0.5
-    @set player "dx" = 1
-    @set player "dy" = 0
+    player:dx = 1
+    player:dy = 0
   @if gameX < -0.5
-    @set player "dx" = -1
-    @set player "dy" = 0
+    player:dx = -1
+    player:dy = 0
   @if gameY > 0.5
-    @set player "dx" = 0
-    @set player "dy" = 1
+    player:dx = 0
+    player:dy = 1
   @if gameY < -0.5
-    @set player "dx" = 0
-    @set player "dy" = -1
-  @set player "x" += player "dx"
-  @set player "y" += player "dy"
-  pset (player "x") (player "y") white
-  ~ log2Numbers (player "x") (player "y")
+    player:dx = 0
+    player:dy = -1
+  player:x += player:dx
+  player:y += player:dy
+  pset player:x player:y white
+  ~ log2Numbers player:x player:y
 
 @export "display" render t
   displayMemory

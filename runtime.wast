@@ -1,13 +1,3 @@
-(func $-getMindex (result i32)
-  (i32.mul (i32.div_u (get_global $-mindex) (i32.const 8)) (i32.const 8))
-)
-(export "getMindex" (func $-getMindex))
-(func $-loadF64 (param $offset i32) (result f64)
-  (f64.load (get_local $offset))
-)
-(export "loadF64" (func $-loadF64))
-(export "garbagecollect" (func $-garbagecollect))
-
 ;; memory management
 (func $-initruntime
   (i32.store (i32.const 0) (i32.sub (i32.mul (i32.const 65536) (current_memory)) (i32.const 8)))
@@ -294,21 +284,6 @@
     (call $-write32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4)) (i32.add (get_local $refs) (i32.const 1)))
   ))
 )
-;; ;; deregister reference
-;; (func $-deref (param $id i32)
-;;   (local $refs i32)
-;;   (if (call $-offset (get_local $id))(then
-;;     (set_local $id (i32.sub (get_local $id) (i32.const 8)))
-;;     (set_local $refs (call $-read32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4))))
-;;     (call $-write32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4)) (i32.sub (get_local $refs) (i32.const 1)))
-;;   ))
-;; )
-;; ;; replace reference
-;; (func $-reref (param $oldid i32) (param $newid i32) (result i32)
-;;   (call $-ref (get_local $newid))
-;;   (call $-deref (get_local $oldid))
-;;   (get_local $newid)
-;; )
 (global $-coreVals (mut i32) (i32.const 0))
 ;; clear all references in index
 (func $-zerorefs
@@ -358,8 +333,6 @@
   (local $id i32)
   (local $refs i32)
   (local $offset i32)
-  (local $datatype i32)
-  (local $elem i32)
 
   (set_local $id (i32.div_u (call $-len (i32.const -1)) (i32.const 8)))
   (block(loop (br_if 1 (i32.eqz (get_local $id)))
@@ -368,15 +341,6 @@
     (if (i32.eqz (get_local $refs))(then
       (set_local $offset (call $-read32 (i32.const -1) (i32.mul (get_local $id) (i32.const 8))))
       (if (get_local $offset)(then
-        (set_local $datatype (i32.and (get_local $offset) (i32.const 7)))
-        ;; is this an array/object? dereference all its elements
-        ;; (if (i32.eq (i32.and (get_local $datatype) (i32.const 6)) (i32.const 4))(then
-        ;;   (set_local $elem (i32.div_u (call $-len (i32.add (get_local $id) (i32.const 8))) (i32.const 4)))
-        ;;   (block(loop (br_if 1 (i32.eqz (get_local $elem)))
-        ;;     (set_local $elem (i32.sub (get_local $elem) (i32.const 1)))
-        ;;     (call $-deref (call $-read32 (i32.add (get_local $id) (i32.const 8)) (i32.mul (get_local $elem) (i32.const 4))))
-        ;;   (br 0)))
-        ;; ))
         (call $-dealloc (get_local $offset))
         (call $-write32 (i32.const -1) (i32.mul (get_local $id) (i32.const 8)) (i32.const 0))
       ))
@@ -492,16 +456,6 @@
   (call $-memcopy (call $-offset (get_local $id1)) (call $-offset (get_local $id3)) (get_local $len1))
   (call $-memcopy (call $-offset (get_local $id2)) (i32.add (call $-offset (get_local $id3)) (get_local $len1)) (get_local $len2))
   (call $-resize (get_local $id3) (i32.add (get_local $len1) (get_local $len2)))
-  ;; if array or object, reference all members
-  ;; (if (i32.or (i32.eq (get_local $datatype) (i32.const 4)) (i32.eq (get_local $datatype) (i32.const 5)))(then
-  ;;   (set_local $offset (i32.div_u (call $-len (get_local $id3)) (i32.const 4)))
-  ;;   (block(loop
-  ;;     (br_if 1 (i32.eqz (get_local $offset)))
-  ;;     (set_local $offset (i32.sub (get_local $offset) (i32.const 1)))
-  ;;     (call $-ref (call $-read32 (get_local $id3) (i32.mul (get_local $offset) (i32.const 8))))
-  ;;     (br 0)
-  ;;   ))
-  ;; ))
   (get_local $id3)
 )
 
