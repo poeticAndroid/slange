@@ -189,7 +189,7 @@ function scanForGlobals(tokenTree) {
   let statement = []
   for (let token of tokenTree) {
     if (";}".includes(token)) {
-      if (statement[0] === "@set") {
+      if (statement[0] === "@var") {
         if (isIdentifier(statement[1])) {
           if (globals[statement[1]]) throw `duplicate identifier "${statement[1]}"`
           globals[statement[1]] = true
@@ -263,7 +263,7 @@ function compileModule(c) {
   let statement = []
   for (let token of c.tokenTree) {
     if (";}".includes(token)) {
-      if (statement[0] === "@set") {
+      if (statement[0] === "@var") {
         globals += `(global $${statement[1]} (mut i32) (i32.const 0))\n`
         statement.shift()
       }
@@ -448,7 +448,7 @@ function compileStatement(tokenTree, globals, locals) {
   let wast = ""
   tokenTree = deparens(tokenTree, true)
 
-  if (tokenTree[0] === "@set") {
+  if (tokenTree[0] === "@var") {
     tokenTree.shift()
     if (!locals.includes(tokenTree[0])) {
       locals.push(tokenTree[0])

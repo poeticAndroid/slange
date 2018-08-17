@@ -1,13 +1,13 @@
 ~~~ THE MAIN EVENT! ~~~
-@set player =
+@var player =
   :x = 8
   :y = 8
   :dx = 1
   :dy = 0
   :length = 16
   :hist = @array
-@set black = "!!!!"
-@set white = "æøå"
+@var black = "!!!!"
+@var white = "æøå"
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
@@ -20,10 +20,10 @@
     :x = player:x
     :y = player:y
   @if (array_length player:hist) > player:length
-    @set old = array_shift player:hist
+    @var old = array_shift player:hist
     pset old:x old:y black
-  @set gameX = getGameAxisX
-  @set gameY = getGameAxisY
+  @var gameX = getGameAxisX
+  @var gameY = getGameAxisY
   @if gameX > 0.5
     player:dx = 1
     player:dy = 0
@@ -75,8 +75,8 @@
   _pushFromMemory (address_of str) (size_of str)
 
 @func popToMemory
-  @set len = _getBufferSize
-  @set str = ""
+  @var len = _getBufferSize
+  @var str = ""
   write8 str (len-1) 0
   _popToMemory (address_of str)
   @return str
@@ -90,16 +90,16 @@
   pushFromMemory str
   _print
 
-@set displayWidth = 64
-@set displayHeight = 64
-@set display = @binary
+@var displayWidth = 64
+@var displayHeight = 64
+@var display = @binary
 write8 display (4*displayWidth*displayHeight)-1 0
 
 @func displayMemory
   _displayMemory (address_of display) (size_of display)
 
 @func pset x y c
-  @set index = 4 * (y * displayWidth + x)
+  @var index = 4 * (y * displayWidth + x)
   @if index >= 0 &&  index < ( size_of display )
     write32 display index c
     
