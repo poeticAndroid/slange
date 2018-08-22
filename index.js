@@ -18,7 +18,7 @@ function compile(path) {
   let level = 0
   compilation.tokenTree = createTokenTree(compilation)
   compilation.globals = scanForGlobals(compilation.tokenTree)
-  console.log(JSON.stringify(compilation, null, 2))
+  // console.log(JSON.stringify(compilation, null, 2))
   let wast = compileModule(compilation)
   fs.writeFileSync(path.replace(".poem", ".wast"), wast)
   let wasm = compileWast(wast)
@@ -399,6 +399,7 @@ function compileFunction(tokenTree, globals) {
   let wast = ""
   let locals = []
   tokenTree = deparens(tokenTree, true)
+  globals["-blocks"] = -1
 
   wast += `\n;; function $${tokenTree[1]} \n`
   wast += `(func $${tokenTree[1]} `
@@ -426,6 +427,7 @@ function compileFunction(tokenTree, globals) {
 
 function compileBlock(tokenTree, globals, locals) {
   let wast = "(block\n"
+  globals["-blocks"]++
   tokenTree = deparens(tokenTree, true)
 
   let statement = []
@@ -441,6 +443,7 @@ function compileBlock(tokenTree, globals, locals) {
     wast += compileStatement(statement, globals, locals) + "\n"
   }
   wast += "(set_local $-success (i32.const 1)))\n"
+  globals["-blocks"]--
   return wast
 }
 
@@ -466,11 +469,13 @@ function compileStatement(tokenTree, globals, locals) {
     wast += `(then ${compileBlock(tokenTree[tokenTree.length - 1], globals, locals)}))`
   } else if (tokenTree[0] === "@while") {
     wast += `(block(loop`
+    globals["-blocks"] += 2
     wast += `(br_if 1 (call $-falsy ${compileExpression(tokenTree.slice(1, tokenTree.length - 1), globals, locals)}))`
     wast += ` ${compileBlock(tokenTree[tokenTree.length - 1], globals, locals)}`
     wast += `(br 0)))`
+    globals["-blocks"] -= 2
   } else if (tokenTree[0] === "@return") {
-    wast += `(return (tee_local $-ret ${compileExpression(tokenTree.slice(1), globals, locals)}))\n`
+    wast += `(set_local $-ret ${compileExpression(tokenTree.slice(1), globals, locals)})(br ${globals["-blocks"]})\n`
   } else {
     let expr = compileExpression(tokenTree, globals, locals)
     if (expr) wast += `(drop ${expr})\n`
