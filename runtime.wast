@@ -349,6 +349,7 @@
   ))
 )
 (global $-coreVals (mut i32) (i32.const 0))
+(global $-highId (mut i32) (i32.const 0))
 ;; clear all references in index
 (func $-zerorefs
   (local $id i32)
@@ -356,6 +357,7 @@
   (if (i32.eqz (get_global $-coreVals))(then
     (set_global $-coreVals (get_local $id))
   ))
+  (set_global $-highId (get_global $-coreVals))
   (block(loop (br_if 1 (i32.eqz (get_local $id)))
     (set_local $id (i32.sub (get_local $id) (i32.const 1)))
     (if (i32.lt_u (get_local $id) (get_global $-coreVals))(then
@@ -380,6 +382,9 @@
       (call $-write32 (i32.const -1) (i32.add (i32.mul (get_local $id) (i32.const 8)) (i32.const 4)) (i32.const 1))
       (set_local $id (i32.add (get_local $id) (i32.const 8)))
       (set_local $datatype (call $-datatype (get_local $id)))
+      (if (i32.gt_u (get_local $id) (get_global $-highId))(then
+        (set_global $-highId (get_local $id))
+      ))
       ;; is it array/object?
       (if (i32.eq (i32.and (get_local $datatype) (i32.const 6)) (i32.const 4))(then
         (set_local $offset (call $-len (get_local $id)))
@@ -410,6 +415,7 @@
       ))
     ))
   (br 0)))
+  (call $-resize (i32.const -1) (i32.mul (i32.add (get_global $-highId) (i32.const 1)) (i32.const 8)))
 )
 
 (func $-truthy (param $id i32) (result i32)
