@@ -29,7 +29,7 @@
   ;; how much space is here at the beginning?
   (set_local $space (i32.load (get_local $offset)))
   ;; round down to nearest multiple of 8
-  (set_local $space (i32.mul (i32.div_u (get_local $space) (i32.const 8) ) (i32.const 8) ) )
+  (set_local $space (i32.and (get_local $space) (i32.const -8) ) )
   (block(loop
     ;; is there enough space here?
     (br_if 1 (i32.gt_u (get_local $space) (i32.add (get_local $len) (i32.const 32))))
@@ -52,11 +52,11 @@
     ;; skip the data
     (set_local $offset (i32.add (i32.add (get_local $offset) (get_local $space)) (i32.const 4)))
     ;; align to next multiple of 8
-    (set_local $offset (i32.add (i32.mul (i32.div_u (get_local $offset) (i32.const 8)) (i32.const 8)) (i32.const 8)))
+    (set_local $offset (i32.add (i32.and (get_local $offset) (i32.const -8)) (i32.const 8)))
     ;; how much space is here?
     (set_local $space (i32.load (get_local $offset)))
     ;; round down to nearest multiple of 8
-    (set_local $space (i32.mul (i32.div_u (get_local $space) (i32.const 8) ) (i32.const 8) ) )
+    (set_local $space (i32.and (get_local $space) (i32.const -8) ) )
     (br 0)
   ))
   ;; claim the space
@@ -67,7 +67,7 @@
   ;; skip allocation
   (set_local $offset2 (i32.add (i32.add (get_local $offset2) (get_local $len)) (i32.const 4)))
   ;; round down to nearest multiple of 8
-  (set_local $offset2 (i32.mul (i32.div_u (get_local $offset2) (i32.const 8)) (i32.const 8)))
+  (set_local $offset2 (i32.and (get_local $offset2) (i32.const -8)))
   ;; set terminator
   (i64.store (get_local $offset2) (i64.const 0))
   (set_local $offset2 (i32.add (get_local $offset2) (i32.const 8)))
@@ -89,17 +89,17 @@
   (local $space i32)
   (local $space2 i32)
 
-  (set_local $offset (i32.sub (i32.mul (i32.div_u (get_local $offset) (i32.const 8)) (i32.const 8)) (i32.const 8)))
+  (set_local $offset (i32.sub (i32.and (get_local $offset) (i32.const -8)) (i32.const 8)))
   (set_local $space (i32.load (get_local $offset)))
-  (set_local $space (i32.mul (i32.div_u (get_local $space) (i32.const 8) ) (i32.const 8) ) )
+  (set_local $space (i32.and (get_local $space) (i32.const -8) ) )
   (set_local $offset (i32.sub (get_local $offset) (get_local $space)))
 
   (set_local $offset2 (i32.add (i32.add (get_local $offset) (get_local $space)) (i32.const 4)))
   (set_local $space2 (i32.load (get_local $offset2)))  
   (set_local $offset2 (i32.add (i32.add (get_local $offset2) (get_local $space2)) (i32.const 4)))
-  (set_local $offset2 (i32.add (i32.mul (i32.div_u (get_local $offset2) (i32.const 8)) (i32.const 8)) (i32.const 8)))
+  (set_local $offset2 (i32.add (i32.and (get_local $offset2) (i32.const -8)) (i32.const 8)))
   (set_local $space2 (i32.load (get_local $offset2)))
-  (set_local $space2 (i32.mul (i32.div_u (get_local $space2) (i32.const 8) ) (i32.const 8) ) )
+  (set_local $space2 (i32.and (get_local $space2) (i32.const -8) ) )
   (set_local $offset2 (i32.add (get_local $offset2) (get_local $space2)))
 
   (set_local $space (i32.sub (get_local $offset2) (get_local $offset)))
@@ -144,7 +144,7 @@
       (set_local $offset (i32.load (get_local $offset)))
     ))
   ))
-  (set_local $offset (i32.mul (i32.div_u (get_local $offset) (i32.const 8)) (i32.const 8)))
+  (set_local $offset (i32.and (get_local $offset) (i32.const -8)))
   (get_local $offset)
 )
 
