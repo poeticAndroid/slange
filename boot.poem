@@ -8,17 +8,36 @@
   :hist = @array
 @var black = "!!!!"
 @var white = "æøå"
+@var food = "æ!~"
+
+@func new_game
+  player:x = displayWidth/2
+  player:y = displayHeight/2
+  player:length = 1
+  place_food
+
+@func place_food
+  @var x = random displayWidth
+  @var y = random displayHeight
+  pset x y food
 
 @export "init" init
   setDisplayMode 1 displayWidth displayHeight
-  log2Numbers displayWidth displayHeight
   setStepInterval 64
   focusInput 3
+  pset 1 1 food
+  food = pget 1 1
+  pset 2 2 white
+  white = pget 2 2
+  new_game
 
 @export "step" step t
   array_push player:hist
     :x = player:x
     :y = player:y
+  @if (array_length player:hist) > player:length
+    @var old = array_shift player:hist
+    pset old:x old:y black
   @if (array_length player:hist) > player:length
     @var old = array_shift player:hist
     pset old:x old:y black
@@ -38,6 +57,19 @@
     player:dy = -1
   player:x += player:dx
   player:y += player:dy
+  @if player:x < 0
+    new_game
+  @if player:y < 0
+    new_game
+  @if player:x >= displayWidth
+    new_game
+  @if player:y >= displayHeight
+    new_game
+  @if food == pget player:x player:y
+    player:length += 1
+    place_food
+  @if white == pget player:x player:y
+    new_game
   pset player:x player:y white
   ~ log2Numbers player:x player:y
 
@@ -70,6 +102,8 @@
 @import "env" "getGameButtonY" getGameButtonY 0 1
 @import "env" "setStepInterval" setStepInterval 1 0
 
+@import "Math" "floor" floor 1 1
+@import "Math" "random" _random 0 1
 
 @func pushFromMemory str
   _pushFromMemory (address_of str) (size_of str)
@@ -98,11 +132,19 @@ write8 display (4*displayWidth*displayHeight)-1 0
 @func displayMemory
   _displayMemory (address_of display) (size_of display)
 
+@func pget x y
+  @var index = 4 * (y * displayWidth + x)
+  @if index >= 0 && index < ( size_of display )
+    @var c = read32 display index
+  @return c
+
 @func pset x y c
   @var index = 4 * (y * displayWidth + x)
   @if index >= 0 &&  index < ( size_of display )
     write32 display index c
-    
+
+@func random max
+  @return floor max * _random
 
 
 
