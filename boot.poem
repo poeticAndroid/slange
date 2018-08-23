@@ -25,10 +25,10 @@
   setDisplayMode 1 displayWidth displayHeight
   setStepInterval 64
   focusInput 3
+  pset 1 1 white
+  white = pget 1 1
   pset 1 1 food
   food = pget 1 1
-  pset 2 2 white
-  white = pget 2 2
   new_game
 
 @export "step" step t
@@ -43,28 +43,28 @@
     pset old:x old:y black
   @var gameX = getGameAxisX
   @var gameY = getGameAxisY
-  @if gameX > 0.5
+  @if gameX > 0.5 && player:dy
     player:dx = 1
     player:dy = 0
-  @if gameX < -0.5
+  @if gameX < -0.5 && player:dy
     player:dx = -1
     player:dy = 0
-  @if gameY > 0.5
+  @if gameY > 0.5 && player:dx
     player:dx = 0
     player:dy = 1
-  @if gameY < -0.5
+  @if gameY < -0.5 && player:dx
     player:dx = 0
     player:dy = -1
   player:x += player:dx
   player:y += player:dy
   @if player:x < 0
-    new_game
+    player:x += displayWidth
   @if player:y < 0
-    new_game
+    player:y += displayHeight
   @if player:x >= displayWidth
-    new_game
+    player:x -= displayWidth
   @if player:y >= displayHeight
-    new_game
+    player:y -= displayHeight
   @if food == pget player:x player:y
     player:length += 1
     place_food
