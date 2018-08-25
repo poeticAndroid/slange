@@ -1,0 +1,68 @@
+@export_memory "memory"
+@import "env" "pushFromMemory" _pushFromMemory 2 0
+@import "env" "popToMemory" _popToMemory 1 0
+@import "env" "getBufferSize" _getBufferSize 0 1
+@import "env" "log" _log 0 0
+@import "env" "logNumber" log1Number 1 0
+@import "env" "logNumber" log2Numbers 2 0
+@import "env" "logNumber" log6Numbers 6 0
+@import "env" "setDisplayMode" setDisplayMode 3 0
+@import "env" "print" _print 0 0
+@import "env" "displayMemory" _displayMemory 2 0
+@import "env" "startTone" startTone 2 0
+@import "env" "stopTone" stopTone 1 0
+@import "env" "focusInput" focusInput 1 0
+@import "env" "getGameAxisX" getGameAxisX 0 1
+@import "env" "getGameAxisY" getGameAxisY 0 1
+@import "env" "getGameButtonA" getGameButtonA 0 1
+@import "env" "getGameButtonB" getGameButtonB 0 1
+@import "env" "getGameButtonX" getGameButtonX 0 1
+@import "env" "getGameButtonY" getGameButtonY 0 1
+@import "env" "setStepInterval" setStepInterval 1 0
+
+@import "Math" "random" _random 0 1
+
+@func pushFromMemory str
+  _pushFromMemory (address_of str) (size_of str)
+
+@func popToMemory
+  @var len = _getBufferSize
+  @var str = ""
+  binary_write str (len-1) 0
+  _popToMemory (address_of str)
+  @return str
+
+
+@func log message
+  pushFromMemory message
+  _log
+
+@func print str
+  pushFromMemory str
+  _print
+
+@var displayWidth = 64
+@var displayHeight = 64
+@var display = @binary
+binary_write display (4*displayWidth*displayHeight)-1 0
+
+@func displayMemory
+  _displayMemory (address_of display) (size_of display)
+
+@func pget x y
+  @var index = 4 * (y * displayWidth + x)
+  @if index >= 0 && index < ( size_of display )
+    @var c = binary_slice display index 4
+  @return c
+
+@func pset x y c
+  @var index = 4 * (y * displayWidth + x)
+  @if index >= 0 &&  index < ( size_of display )
+    binary_write display index c
+
+@func random max
+  @return floor max * _random
+
+
+
+
