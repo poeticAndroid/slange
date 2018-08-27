@@ -4,7 +4,7 @@
   "description": "A snake game written in Poetry",
   "main": "index.js",
   "scripts": {
-    "build": "poetry -b boot.wasm -t boot.wast boot.poem",
+    "build": "poetry boot.poem -t boot.wast -b boot.wasm",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/poeticAndroid/slange#readme",
   "devDependencies": {
-    "poetry-compiler": "^0.5.1",
+    "poetry-compiler": "^0.6.1",
     "wabt": "^1.0.0"
   }
 }

@@ -1,28 +1,28 @@
-@include "./api.poem" api\
+include "./api.poem" api\
 
-@var player =
+var player =
   :x = 8
   :y = 8
   :dx = 1
   :dy = 0
   :length = 16
-  :hist = @array
-@var black = "!!!!"
-@var white = "æøå"
-@var food = "æ!~"
+  :hist = array
+var black = "!!!!"
+var white = "æøå"
+var food = "æ!~"
 
-@func new_game
+func new_game
   player:x = api\displayWidth/2
   player:y = api\displayHeight/2
   player:length = 1
   place_food
 
-@func place_food
-  @var x = api\random api\displayWidth
-  @var y = api\random api\displayHeight
+func place_food
+  var x = api\random api\displayWidth
+  var y = api\random api\displayHeight
   api\pset x y food
 
-@export "init" init
+export "init" init
   api\setDisplayMode 1 api\displayWidth api\displayHeight
   api\setStepInterval 64
   api\focusInput 3
@@ -32,50 +32,50 @@
   food = api\pget 1 1
   new_game
 
-@export "step" step t
+export "step" step t
   array_push player:hist
     :x = player:x
     :y = player:y
-  @var i = 2
-  @while i
-    @if (array_length player:hist) > player:length
-      @var old = array_shift player:hist
-      @if food != api\pget old:x old:y
+  var i = 2
+  while i
+    if (array_length player:hist) > player:length
+      var old = array_shift player:hist
+      if food != api\pget old:x old:y
         api\pset old:x old:y black
     i -= 1
-  @var gameX = api\getGameAxisX
-  @var gameY = api\getGameAxisY
-  @if gameX > (abs gameY) && player:dy
+  var gameX = api\getGameAxisX
+  var gameY = api\getGameAxisY
+  if gameX > (abs gameY) && player:dy
     player:dx = 1
     player:dy = 0
-  @if gameX < (-abs gameY) && player:dy
+  if gameX < (-abs gameY) && player:dy
     player:dx = -1
     player:dy = 0
-  @if gameY > (abs gameX) && player:dx
+  if gameY > (abs gameX) && player:dx
     player:dx = 0
     player:dy = 1
-  @if gameY < (-abs gameX) && player:dx
+  if gameY < (-abs gameX) && player:dx
     player:dx = 0
     player:dy = -1
   player:x += player:dx
   player:y += player:dy
-  @if player:x < 0
+  if player:x < 0
     player:x += api\displayWidth
-  @if player:y < 0
+  if player:y < 0
     player:y += api\displayHeight
-  @if player:x >= api\displayWidth
+  if player:x >= api\displayWidth
     player:x -= api\displayWidth
-  @if player:y >= api\displayHeight
+  if player:y >= api\displayHeight
     player:y -= api\displayHeight
-  @if food == api\pget player:x player:y
+  if food == api\pget player:x player:y
     player:length += 2
     place_food
-  @if white == api\pget player:x player:y
+  if white == api\pget player:x player:y
     player:length = 1
   api\pset player:x player:y white
   ~ api\log2Numbers player:x player:y
 
-@export "display" render t
+export "display" render t
   api\displayMemory
 
 
