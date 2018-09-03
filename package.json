@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/poeticAndroid/slange#readme",
   "devDependencies": {
-    "poetry-compiler": "^0.6.1",
+    "poetry-compiler": "^0.7.0",
     "wabt": "^1.0.0"
   }
 }
