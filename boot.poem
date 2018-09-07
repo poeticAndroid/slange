@@ -1,4 +1,4 @@
-include "./api.poem" api\
+include "./api.poem"
 
 var player =
   :x = 8
@@ -12,24 +12,24 @@ var white = "æøå"
 var food = "æ!~"
 
 func new_game
-  player:x = api\displayWidth/2
-  player:y = api\displayHeight/2
+  player:x = displayWidth/2
+  player:y = displayHeight/2
   player:length = 1
   place_food
 
 func place_food
-  var x = api\random api\displayWidth
-  var y = api\random api\displayHeight
-  api\pset x y food
+  var x = random displayWidth
+  var y = random displayHeight
+  pset x y food
 
 export "init" init
-  api\setDisplayMode 1 api\displayWidth api\displayHeight
-  api\setStepInterval 64
-  api\focusInput 3
-  api\pset 1 1 white
-  white = api\pget 1 1
-  api\pset 1 1 food
-  food = api\pget 1 1
+  setDisplayMode 1 displayWidth displayHeight
+  setStepInterval 64
+  focusInput 3
+  pset 1 1 white
+  white = pget 1 1
+  pset 1 1 food
+  food = pget 1 1
   new_game
 
 export "step" step t
@@ -40,11 +40,11 @@ export "step" step t
   while i
     if (array_length player:hist) > player:length
       var old = array_shift player:hist
-      if food != api\pget old:x old:y
-        api\pset old:x old:y black
+      if food != pget old:x old:y
+        pset old:x old:y black
     i -= 1
-  var gameX = api\getGameAxisX
-  var gameY = api\getGameAxisY
+  var gameX = getGameAxisX
+  var gameY = getGameAxisY
   if gameX > (abs gameY) && player:dy
     player:dx = 1
     player:dy = 0
@@ -60,22 +60,22 @@ export "step" step t
   player:x += player:dx
   player:y += player:dy
   if player:x < 0
-    player:x += api\displayWidth
+    player:x += displayWidth
   if player:y < 0
-    player:y += api\displayHeight
-  if player:x >= api\displayWidth
-    player:x -= api\displayWidth
-  if player:y >= api\displayHeight
-    player:y -= api\displayHeight
-  if food == api\pget player:x player:y
+    player:y += displayHeight
+  if player:x >= displayWidth
+    player:x -= displayWidth
+  if player:y >= displayHeight
+    player:y -= displayHeight
+  if food == pget player:x player:y
     player:length += 2
     place_food
-  if white == api\pget player:x player:y
+  if white == pget player:x player:y
     player:length = 1
-  api\pset player:x player:y white
-  ~ api\log2Numbers player:x player:y
+  pset player:x player:y white
+  ~ log2Numbers player:x player:y
 
 export "display" render t
-  api\displayMemory
+  displayMemory
 
 
